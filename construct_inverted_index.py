@@ -23,7 +23,7 @@ db = client.postingDb
 collection = db.posting
 
 docId_url_dict = dict()
-total_doc_number = 0
+total_doc_number = 37497
 token_dict = dict()
 stop_words_set = set(stopwords.words("english")).union(set(string.punctuation))
 
@@ -36,10 +36,9 @@ def parse_json_file(json_file_path):
 		docId_url_dict = file_dict # Get docIc->url dict
 		# counter = 0
 		for docId in file_dict:
-			if docId != "39/373":
-				print("################ docId: ", docId, "#####################")
-				parse_corpus_file(docId)
-				# counter += 1
+			print("################ docId: ", docId, "#####################")
+			parse_corpus_file(docId)
+			# counter += 1
 		# update_post()
 
 def parse_corpus_file(docId):
@@ -80,7 +79,8 @@ def parse_corpus_file(docId):
 
 def update_post():
 	print("Starting to update post...")
-	for post in collection.find({}):
+	cursor = collection.find({}, no_cursor_timeout = True)
+	for post in cursor:
 		doc_occurrence_counter = len(post)-1
 		IDF = math.log( total_doc_number / (doc_occurrence_counter) )
 		for key in post:
@@ -88,7 +88,8 @@ def update_post():
 			if ("/" in key):
 				TFIDF = post[key]["TF"] * IDF
 				collection.update({"_id":post["_id"]}, {"$set":{(key+".TF-IDF"):TFIDF}})
-
+	cursor.close()
+	print("Finish updating post")
 
 if __name__ == "__main__":
 	json_file_path = os.path.join(".", "WEBPAGES_RAW/bookkeeping.json")
@@ -106,9 +107,12 @@ if __name__ == "__main__":
 	# posting will be stored in database
 	# For test
 	# for post in collection.find({}):
-	# 	pprint.pprint(post)
+		# pprint.2pprint(post)
 	print("There are: " + str(total_doc_number) + " files, in total.")
 	print("There are: " + str(len(token_dict)) + " tokens, in total.")	
 
 	# For search
-	# db.posting.find({"_id" : ObjectId("5aff494e4175862746f40a78")});
+	db.posting.find({"_id" : ObjectId("5aff494e4175862746f40a78")});
+
+	# Update TF-IDF for each token 
+	update_post()
