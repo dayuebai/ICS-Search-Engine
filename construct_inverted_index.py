@@ -34,12 +34,9 @@ def parse_json_file(json_file_path):
 		global docId_url_dict
 		total_doc_number = len(file_dict) # Get number of documents of the corpus
 		docId_url_dict = file_dict # Get docIc->url dict
-		# counter = 0
 		for docId in file_dict:
 			print("################ docId: ", docId, "#####################")
 			parse_corpus_file(docId)
-			# counter += 1
-		# update_post()
 
 def parse_corpus_file(docId):
 	html_file_path = os.path.join(".", "WEBPAGES_RAW/" + docId)
