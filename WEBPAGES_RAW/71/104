@@ -1,1 +1,0 @@
-python C:\Python32\Lib\pydoc.py -w dice driver equivalence goody graph modular predicate priorityqueue prompt queue stack stopwatch
